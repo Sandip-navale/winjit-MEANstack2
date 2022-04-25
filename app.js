@@ -1,24 +1,54 @@
-const express = require("express");
+// const express = require("express");
+// const app = express();
 
-//Create a express app with following command
+
+
+const express = require("express");
+const bodyParser = require("body-parser");
+
 const app = express();
 
-//express is a chain of middlewares, that we apply to the incoming requests. Each part of the funnel can do something with the request
-//It could read it, manipulate it, or do something with response,send response.
+app.use(bodyParser.json());
 
-// We add that middleware with following
-//use function takes 3 arguments
-//If you use next function then request will continue it's journey
-app.use((req, res, next)=>{
-    console.log("sandip's Middleware");
-    next();
+app.use((req, res, next) => {
+  //this means no matter which domain sending request it is allowed to access server
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  // allow types of headers
+  res.setHeader("Access-Control-Allow-Headers", "Origin, Content-Type, Accept");
+  //allow methods that we want to make accessible
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  next();
 });
 
-app.use((req, res, next)=>{
-    res.send('Hello from express to sandip!');
+app.get("/api/posts", (req, res) => {
+  const posts = [
+    {
+      title: "First Post from server",
+      content: "First post content from server",
+    },
+    {
+      title: "Second Post from server",
+      content: "Second post content from server",
+    },
+    {
+      title: "Third Post from server",
+      content: "Third post content from server",
+    },
+  ];
+  //res.send("Hello from improved server!");
+  res.status(200).json({
+    message: "Posts received successfully",
+    posts: posts,
+  });
 });
 
-// we want to use this app in server. to do that we need export it
+app.post("/api/posts", (req, res) => {
+  const post = req.body;
+  console.log("*******Post Received", post);
+
+  res.status(201).json({
+    message: "Posts stored successfully",
+  });
+});
+
 module.exports = app;
-
-//import it in server.js
